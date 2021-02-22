@@ -1,7 +1,10 @@
 import 'package:comrade/login.dart';
+import 'package:comrade/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:comrade/Dashboard.dart';
 import 'package:comrade/main.dart';
+
+AuthServices auth = AuthServices();
 
 showAlertDialog(BuildContext context) {
   // set up the buttons
@@ -20,9 +23,16 @@ showAlertDialog(BuildContext context) {
       "Logout",
       style: TextStyle(color: Colors.orange),
     ),
-    onPressed: () {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => HomePage()));
+    onPressed: () async {
+      auth.signOut().then(
+            (value) => Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => LoginPage(),
+            ),
+                (route) => false
+        ),
+      );
     },
   );
 

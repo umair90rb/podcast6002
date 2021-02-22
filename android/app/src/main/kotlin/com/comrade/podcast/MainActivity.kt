@@ -1,4 +1,4 @@
-package com.example.login_page_day_23
+package com.comrade.podcast
 
 import io.flutter.embedding.android.FlutterActivity
 

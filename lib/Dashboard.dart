@@ -1,9 +1,11 @@
 import 'package:comrade/Drawerpages/invite.dart';
 import 'package:comrade/Drawerpages/podcastsection.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:comrade/Alert/logoutalert.dart';
 import 'package:comrade/Drawerpages/profilepage.dart';
 import 'package:comrade/Drawerpages/earninghistory.dart';
+import 'package:provider/provider.dart';
 
 import 'Drawerpages/requestpayment.dart';
 import 'Drawerpages/termsnpolicies.dart';
@@ -12,6 +14,9 @@ class Dashboard extends StatelessWidget {
   GlobalKey<ScaffoldState> _drawerKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
+
+    var user = Provider.of<User>(context);
+
     return Material(
       child: Hero(
         tag: 'dashboard',
@@ -36,7 +41,7 @@ class Dashboard extends StatelessWidget {
                 children: <Widget>[
                   UserAccountsDrawerHeader(
                     accountEmail: Text(
-                      "dev@development.com",
+                      user.email,
                       style: TextStyle(color: Colors.black),
                     ),
                     accountName: Text(
@@ -45,6 +50,7 @@ class Dashboard extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(color: Colors.white),
                     currentAccountPicture: CircleAvatar(
+                      backgroundImage: user.photoURL == null ? null :  NetworkImage(user.photoURL),
                       backgroundColor:
                           Theme.of(context).platform == TargetPlatform.android
                               ? Colors.black

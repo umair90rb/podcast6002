@@ -1,6 +1,12 @@
 import 'package:comrade/Dashboard.dart';
 import 'package:comrade/Drawerpages/profilepage.dart';
+import 'package:comrade/services/auth.dart';
+import 'package:comrade/services/db_services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:progress_dialog/progress_dialog.dart';
+import 'package:provider/provider.dart';
 import 'changepass.dart';
 import 'editprofile.dart';
 
@@ -10,8 +16,32 @@ class Myaccount extends StatefulWidget {
 }
 
 class _MyaccountState extends State<Myaccount> {
+  AuthServices _auth = AuthServices();
+  DbServices _db = DbServices();
+
+  var user;
+  String name = '';
+
+  getProfile(String uid){
+    _db.getDoc('profile', uid).then((profile) {
+      name = profile['name'];
+      mounted ? setState(() {}) : null ;
+    });
+  }
+
+
+  @override
+  void initState() {
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => getProfile(user.uid));
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    user = Provider.of<User>(context);
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
@@ -42,7 +72,7 @@ class _MyaccountState extends State<Myaccount> {
                 top: 20,
               ),
               child: Text(
-                "Name Here",
+                name,
                 style: TextStyle(fontSize: 20),
               ),
             ),
@@ -104,9 +134,16 @@ class _MyaccountState extends State<Myaccount> {
                     ),
                     // textScaleFactor: 1.5,
                   ),
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Changepass()));
+                  onTap: () async {
+                    ProgressDialog dialog = ProgressDialog(context);
+                    dialog.style(message: "Please wait...");
+                    await dialog.show();
+                    _auth.forgotPassword(user.email).then((value) async {
+                      await dialog.hide();
+                      value
+                          ? Fluttertoast.showToast(msg: 'Reset link send to email!')
+                          : Fluttertoast.showToast(msg: 'Something goes wrong!');
+                    });
                   },
                 ),
               ),

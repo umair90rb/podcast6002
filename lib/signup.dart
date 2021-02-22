@@ -1,5 +1,10 @@
 import 'package:comrade/login.dart';
+import 'package:comrade/services/auth.dart';
+import 'package:comrade/services/db_services.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:progress_dialog/progress_dialog.dart';
+import 'Dashboard.dart';
 import 'animation/FadeAnimation.dart';
 
 import 'package:dropdown_formfield/dropdown_formfield.dart';
@@ -14,6 +19,13 @@ class _SignupPageState extends State<SignupPage> {
   String _myActivityResult;
 
   final formKey = new GlobalKey<FormState>();
+
+  AuthServices auth = AuthServices();
+  DbServices db = DbServices();
+
+  TextEditingController email = TextEditingController();
+  TextEditingController password = TextEditingController();
+  TextEditingController confirmPassword = TextEditingController();
 
   @override
   void initState() {
@@ -42,52 +54,54 @@ class _SignupPageState extends State<SignupPage> {
         setState(() {
           _myActivity = value;
         });
+        print(_myActivity);
       },
       onChanged: (value) {
         setState(() {
           _myActivity = value;
+          print(_myActivity);
         });
       },
       dataSource: [
         {
           "display": "Relationship",
-          "value": "rel",
+          "value": "Relationship",
         },
         {
           "display": "Nutrition",
-          "value": "nutri",
+          "value": "Nutrition",
         },
         {
           "display": "Beauty",
-          "value": "beauty",
+          "value": "Beauty",
         },
         {
           "display": "Career & Education",
-          "value": "candedu",
+          "value": "Career & Education",
         },
         {
           "display": "Work & Profession",
-          "value": "workandprof",
+          "value": "Work & Profession",
         },
         {
           "display": "Entrepreneurship",
-          "value": "ent",
+          "value": "Entrepreneurship",
         },
         {
           "display": "Travel",
-          "value": "travel",
+          "value": "Travel",
         },
         {
           "display": "Investment",
-          "value": "invest",
+          "value": "Investment",
         },
         {
           "display": "Legal",
-          "value": "legal",
+          "value": "Legal",
         },
         {
           "display": "Emotional",
-          "value": "emot",
+          "value": "Emotional",
         },
       ],
       textField: 'display',
@@ -141,11 +155,11 @@ class _SignupPageState extends State<SignupPage> {
               ),
               Column(
                 children: <Widget>[
-                  FadeAnimation(1.2, makeInput(label: "Email")),
+                  FadeAnimation(1.2, makeInput(email, label: "Email")),
                   FadeAnimation(
-                      1.3, makeInput(label: "Password", obscureText: true)),
+                      1.3, makeInput(password, label: "Password", obscureText: true)),
                   FadeAnimation(1.4,
-                      makeInput(label: "Confirm Password", obscureText: true)),
+                      makeInput(confirmPassword, label: "Confirm Password", obscureText: true)),
                   FadeAnimation(
                     1.3,
                     Padding(
@@ -170,7 +184,56 @@ class _SignupPageState extends State<SignupPage> {
                     child: MaterialButton(
                       minWidth: double.infinity,
                       height: 60,
-                      onPressed: () {},
+                      onPressed: () async {
+
+                        if(email.text.isEmpty || password.text.isEmpty || _myActivity.isEmpty || confirmPassword.text.isEmpty){
+
+                          return Fluttertoast.showToast(
+                              msg: "All fields require!",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.CENTER,
+                              timeInSecForIosWeb: 1,
+                              backgroundColor: Colors.red,
+                              textColor: Colors.white,
+                              fontSize: 16.0
+                          );
+
+                        }
+
+                        ProgressDialog dialog = ProgressDialog(context);
+                        dialog.style(message: 'Please wait...');
+                        await dialog.show();
+
+                        auth.signUp(email.text, password.text).then((value) async {
+                          if(value != null){
+                            db.addDataWithId('/profile', value.uid, {
+                              'experties': _myActivity,
+                              'type':'podcaster',
+                              'email': email.text
+                            }).then((value) async {
+                              print(value);
+                              await dialog.hide();
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Dashboard()),
+                              );
+                            });
+
+                          } else {
+                            await dialog.hide();
+                            Fluttertoast.showToast(
+                                msg: "Something goes wrong!",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.CENTER,
+                                timeInSecForIosWeb: 1,
+                                backgroundColor: Colors.red,
+                                textColor: Colors.white,
+                                fontSize: 16.0
+                            );
+                          }
+                        });
+                      },
                       color: Colors.orange,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
@@ -210,7 +273,7 @@ class _SignupPageState extends State<SignupPage> {
     );
   }
 
-  Widget makeInput({label, obscureText = false}) {
+  Widget makeInput(controller, {label, obscureText = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -223,6 +286,7 @@ class _SignupPageState extends State<SignupPage> {
           height: 5,
         ),
         TextField(
+          controller: controller,
           cursorColor: Colors.orange,
           obscureText: obscureText,
           decoration: InputDecoration(

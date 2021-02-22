@@ -1,6 +1,13 @@
+
 import 'package:comrade/Drawerpages/profile.dart';
+import 'package:comrade/services/auth.dart';
+import 'package:comrade/services/db_services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:nice_button/NiceButton.dart';
+import 'package:progress_dialog/progress_dialog.dart';
+import 'package:provider/provider.dart';
 
 class Editprofile extends StatefulWidget {
   @override
@@ -10,9 +17,41 @@ class Editprofile extends StatefulWidget {
 class _EditprofileState extends State<Editprofile> {
   final _formKey = GlobalKey<FormState>();
 
+  TextEditingController name ;
+  TextEditingController qualification ;
+  TextEditingController experience ;
+  TextEditingController description ;
+
+  DbServices _db = DbServices();
+  AuthServices _auth = AuthServices();
+
+  var user;
+  var profile;
+
+  getProfile(String uid){
+    _db.getDoc('profile', uid).then((profile) {
+        profile = profile;
+        name = TextEditingController(text: !profile.data().containsKey('name') ? null : profile['name']);
+        qualification = TextEditingController(text: !profile.data().containsKey('qualification') ? null : profile['qualification']);
+        experience = TextEditingController(text: !profile.data().containsKey('experience') ? null : profile['experience']);
+        description = TextEditingController(text: !profile.data().containsKey('description') ? null : profile['description']);
+
+      mounted ? setState(() {}) : null ;
+    });
+  }
+
+
+  @override
+  void initState() {
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => getProfile(user.uid));
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
+    user = Provider.of<User>(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
@@ -53,7 +92,9 @@ class _EditprofileState extends State<Editprofile> {
                 right: 10,
               ),
               padding: EdgeInsets.only(bottom: 10),
-              child: TextField(
+              child: TextFormField(
+                controller: name,
+                onChanged: (value) => {},
                 cursorColor: Colors.orange,
                 maxLines: 1,
                 decoration: InputDecoration(
@@ -75,6 +116,8 @@ class _EditprofileState extends State<Editprofile> {
               ),
               padding: EdgeInsets.only(bottom: 10),
               child: TextField(
+                enabled: false,
+                controller: TextEditingController(text: user.email),
                 maxLines: 1,
                 cursorColor: Colors.orange,
                 decoration: InputDecoration(
@@ -96,6 +139,8 @@ class _EditprofileState extends State<Editprofile> {
               ),
               padding: EdgeInsets.only(bottom: 10),
               child: TextField(
+                controller: qualification,
+                onChanged: (value) => {},
                 cursorColor: Colors.orange,
                 maxLines: 1,
                 decoration: InputDecoration(
@@ -117,6 +162,8 @@ class _EditprofileState extends State<Editprofile> {
               ),
               padding: EdgeInsets.only(bottom: 10),
               child: TextField(
+                controller: experience,
+                onChanged: (value) => {},
                 cursorColor: Colors.orange,
                 maxLines: 1,
                 decoration: InputDecoration(
@@ -139,6 +186,8 @@ class _EditprofileState extends State<Editprofile> {
               // hack textfield height
               padding: EdgeInsets.only(bottom: 10),
               child: TextField(
+                controller: description,
+                onChanged: (value) => {},
                 cursorColor: Colors.orange,
                 maxLines: 10,
                 decoration: InputDecoration(
@@ -163,7 +212,24 @@ class _EditprofileState extends State<Editprofile> {
               padding: const EdgeInsets.all(10),
               text: "Save",
               gradientColors: [Colors.orange, Colors.orange],
-              onPressed: () {},
+              onPressed: () async {
+                if(name.text.isEmpty || qualification.text.isEmpty || experience.text.isEmpty || description.text.isEmpty){
+                  return Fluttertoast.showToast(msg: 'Nothing to updated!');
+                }
+                ProgressDialog dialog = ProgressDialog(context);
+                dialog.style(message: "Please wait...");
+                await dialog.show();
+
+                _db.updateDoc('profile', user.uid, {
+                  'name':name.text,
+                  'qualification':qualification.text,
+                  'experience':experience.text,
+                  'description':description.text
+                }).then((value) async {
+                  await dialog.hide();
+                  Fluttertoast.showToast(msg: 'Profile updated');
+                });
+              },
             ),
           ]),
         ),

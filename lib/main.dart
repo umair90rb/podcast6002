@@ -1,16 +1,36 @@
+import 'package:comrade/services/auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 import 'animation/FadeAnimation.dart';
 import 'login.dart';
 import 'signup.dart';
 
-void main() {
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    title: "Comrade",
-    home: HomePage(),
-  ));
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
 }
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        StreamProvider<User>.value(value: AuthServices().user),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: "Comrade",
+        home: HomePage(),
+      ),
+    );
+  }
+}
+
+
 
 class HomePage extends StatelessWidget {
   @override

@@ -1,9 +1,20 @@
 import 'package:comrade/Dashboard.dart';
+import 'package:comrade/services/auth.dart';
+import 'package:comrade/services/db_services.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'animation/FadeAnimation.dart';
 import 'forgotpass.dart';
 
 class LoginPage extends StatelessWidget {
+
+  AuthServices auth = AuthServices();
+  DbServices db = DbServices();
+
+  TextEditingController email = TextEditingController();
+  TextEditingController password = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,10 +73,11 @@ class LoginPage extends StatelessWidget {
                         FadeAnimation(
                             1.2,
                             makeInput(
+                              email,
                               label: "Email",
                             )),
                         FadeAnimation(1.3,
-                            makeInput(label: "Password", obscureText: true)),
+                            makeInput(password, label: "Password", obscureText: true)),
                       ],
                     ),
                   ),
@@ -86,11 +98,39 @@ class LoginPage extends StatelessWidget {
                           child: MaterialButton(
                             minWidth: double.infinity,
                             height: 60,
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Dashboard()));
+                            onPressed: () async {
+
+                              if(email.text.isEmpty || password.text.isEmpty ){
+                                return Fluttertoast.showToast(
+                                  msg: "Usename/Password required!",
+                                  toastLength: Toast.LENGTH_SHORT,
+                                );
+                              }
+                              ProgressDialog dialog = ProgressDialog(context);
+                              dialog.style(message: 'Please wait...');
+                              await dialog.show();
+                              auth.emailSignIn(email.text, password.text).then((value) async {
+
+                                if(value != null){
+                                  await dialog.hide();
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Dashboard()),
+                                  );
+                                } else {
+                                  await dialog.hide();
+                                  Fluttertoast.showToast(
+                                    msg: "Invalid Usename/Password!",
+                                    toastLength: Toast.LENGTH_SHORT,
+                                  );
+                                }
+                              });
+
+                              // Navigator.push(
+                              //     context,
+                              //     MaterialPageRoute(
+                              //         builder: (context) => Dashboard()));
                             },
                             color: Colors.orange,
                             elevation: 0,
@@ -138,7 +178,7 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  Widget makeInput({label, obscureText = false}) {
+  Widget makeInput(controller, {label, obscureText = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -151,6 +191,7 @@ class LoginPage extends StatelessWidget {
           height: 5,
         ),
         TextField(
+          controller: controller,
           obscureText: obscureText,
           cursorColor: Colors.orange,
           decoration: InputDecoration(
