@@ -1,11 +1,25 @@
+import 'package:comrade/services/db_services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:comrade/Dashboard.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:nice_button/NiceButton.dart';
+import 'package:provider/provider.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 
 class Requestpayment extends StatelessWidget {
+  DbServices db = DbServices();
+
+  TextEditingController name = TextEditingController();
+  TextEditingController earning = TextEditingController();
+  TextEditingController account = TextEditingController();
+  TextEditingController detail = TextEditingController();
   @override
   Widget build(BuildContext context) {
+
     var size = MediaQuery.of(context).size;
+    var user = Provider.of<User>(context);
+    
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
@@ -47,6 +61,7 @@ class Requestpayment extends StatelessWidget {
               ),
               padding: EdgeInsets.only(bottom: 10),
               child: TextField(
+                controller: name,
                 cursorColor: Colors.orange,
                 maxLines: 1,
                 decoration: InputDecoration(
@@ -68,6 +83,8 @@ class Requestpayment extends StatelessWidget {
               ),
               padding: EdgeInsets.only(bottom: 10),
               child: TextField(
+                enabled: false,
+                controller: TextEditingController(text: user.email),
                 maxLines: 1,
                 cursorColor: Colors.orange,
                 decoration: InputDecoration(
@@ -89,6 +106,7 @@ class Requestpayment extends StatelessWidget {
               ),
               padding: EdgeInsets.only(bottom: 10),
               child: TextField(
+                controller: earning,
                 cursorColor: Colors.orange,
                 maxLines: 1,
                 decoration: InputDecoration(
@@ -110,6 +128,7 @@ class Requestpayment extends StatelessWidget {
               ),
               padding: EdgeInsets.only(bottom: 10),
               child: TextField(
+                controller: account,
                 cursorColor: Colors.orange,
                 maxLines: 1,
                 decoration: InputDecoration(
@@ -132,6 +151,7 @@ class Requestpayment extends StatelessWidget {
               // hack textfield height
               padding: EdgeInsets.only(bottom: 10),
               child: TextField(
+                controller: detail,
                 cursorColor: Colors.orange,
                 maxLines: 10,
                 decoration: InputDecoration(
@@ -157,7 +177,30 @@ class Requestpayment extends StatelessWidget {
               padding: const EdgeInsets.all(10),
               text: "Send",
               gradientColors: [Colors.orange, Colors.orange],
-              onPressed: () {},
+              onPressed: () async {
+                if(name.text.isEmpty || earning.text.isEmpty || account.text.isEmpty){
+                  return Fluttertoast.showToast(msg: 'Name/Earning/Account No is required!');
+                }
+                ProgressDialog dialog = ProgressDialog(context);
+                dialog.style(message: 'Please wait...');
+                await dialog.show();
+                db.addCollection('paymentRequests', user.uid, "paymentRequest", DateTime.now().millisecondsSinceEpoch.toString(), {
+                  'uid':user.uid,
+                  'email':user.email,
+                  'name':name.text,
+                  'earning': earning.text,
+                  'account':account.text,
+                  'detail':detail.text
+                }).then((value) async {
+                  if(!value){
+                    await dialog.hide();
+                    Fluttertoast.showToast(msg: 'Something goes wrong!');
+                  }
+                  await dialog.hide();
+                  Fluttertoast.showToast(msg: 'Request submitted, admin will contact you soon!');
+                  Navigator.pop(context);
+                });
+              },
             ),
           ]),
         ),

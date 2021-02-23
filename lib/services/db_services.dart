@@ -1,11 +1,17 @@
+
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:path/path.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
+import 'dart:async';
+
 class DbServices{
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  FirebaseAuth auth = FirebaseAuth.instance;
+  firebase_storage.FirebaseStorage storage = firebase_storage.FirebaseStorage.instance;
 
   Future addData(String collection, data) {
     CollectionReference colRef = firestore.collection(collection);
@@ -15,9 +21,16 @@ class DbServices{
   }
 
   Future addDataWithId(String collection, String id, data) {
-
     DocumentReference docRef = firestore.collection(collection).doc(id);
     return docRef.set(data)
+        .then((value){return true;})
+        .catchError((error){return false;});
+  }
+
+  Future addCollection(String collection, String id, String collectionName, String ref,  data) {
+
+    DocumentReference docRef = firestore.collection(collection).doc(id);
+    return docRef.collection(collectionName).doc(ref).set(data)
         .then((value){return true;})
         .catchError((error){return false;});
   }
@@ -56,16 +69,34 @@ class DbServices{
     return querySnapshot.docs;
   }
 
+  Future deleteDoc(String collection, String docId) async {
+    DocumentReference docRef = firestore.collection(collection).doc(docId);
+    try {
+      await docRef.delete();
+      return true;
+    } on Exception catch (e){
+      return e;
+    }
+  }
 
   Future uploadFile(String collection, File file) async {
     String name = basename(file.path);
-    firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
-        .ref('$collection/$name');
+    firebase_storage.Reference ref = storage.ref('$collection/$name');
     try {
       await ref.putFile(file);
       dynamic url = await ref.getDownloadURL();
       return url;
     } catch (e) {
+      return e;
+    }
+  }
+
+  Future deleteFile(String url) async {
+    firebase_storage.Reference ref = storage.refFromURL(url);
+    try {
+      await ref.delete();
+      return true;
+    } on Exception catch (e){
       return e;
     }
   }

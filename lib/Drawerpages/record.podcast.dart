@@ -1,5 +1,6 @@
 import 'package:comrade/Drawerpages/podcastsection.dart';
 import 'package:flutter/material.dart';
+import 'package:comrade/recorder/recorder.dart';
 
 class Recordpodcasts extends StatelessWidget {
   @override
@@ -24,6 +25,7 @@ class Recordpodcasts extends StatelessWidget {
           style: TextStyle(color: Colors.white),
         ),
       ),
+      body: RecorderExample(),
     );
   }
 }
