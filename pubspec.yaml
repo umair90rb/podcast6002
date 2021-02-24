@@ -42,6 +42,7 @@ dependencies:
   fluttertoast: ^7.1.6
 
   audioplayers: ^0.17.0
+  media_info: ^0.6.4
   flutter_audio_recorder: ^0.5.5
   file_picker: ^2.1.6
   flutter_slidable: ^0.5.7

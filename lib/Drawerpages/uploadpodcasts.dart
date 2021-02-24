@@ -1,5 +1,6 @@
 import 'package:comrade/Drawerpages/podcastsection.dart';
 import 'package:flutter/material.dart';
+import 'package:media_info/media_info.dart';
 import 'package:nice_button/NiceButton.dart';
 import '../services/db_services.dart';
 import 'package:file_picker/file_picker.dart';
@@ -27,6 +28,10 @@ class _UploadPodcastsState extends State<UploadPodcasts> {
   PlatformFile thumbnail;
 
   PlatformFile _current;
+
+  Map<String, dynamic> _currentInfo;
+
+  final MediaInfo _mediaInfo = MediaInfo();
 
   @override
   Widget build(BuildContext context) {
@@ -173,11 +178,17 @@ class _UploadPodcastsState extends State<UploadPodcasts> {
                             type: FileType.custom,
                             allowMultiple: false
                         );
+
                         if(result != null) {
                           _current = result.files.first;
+                          _mediaInfo.getMediaInfo(_current.path).then((value){
+                            print(value);
+                            _currentInfo = value;
+                          });
+                          print(_currentInfo['durationMs']);
                           setState(() {});
                         } else {
-                          Fluttertoast.showToast(msg: 'No file Selected!');
+                          return Fluttertoast.showToast(msg: 'No file Selected!');
                         }
                     },
                   ),
@@ -247,7 +258,8 @@ class _UploadPodcastsState extends State<UploadPodcasts> {
                             'email':user.email,
                             'thumbnail':thumbnail,
                             'name':name.text,
-                            'description':description.text
+                            'description':description.text,
+                            'duration': _currentInfo.containsKey('durationMs') ? _currentInfo['durationMs']/1000 : 0
                           }).then((value) async {
                             await dialog.hide();
                             value ? Fluttertoast.showToast(msg: 'Podcast Uploaded!') :

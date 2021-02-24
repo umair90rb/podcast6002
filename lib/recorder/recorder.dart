@@ -164,7 +164,8 @@ class RecorderExampleState extends State<RecorderExample> {
                                   'uid':user.uid,
                                   'thumbnail':thumbnail,
                                   'name':name.text,
-                                  'description':description.text
+                                  'description':description.text,
+                                  'duration':_current.duration.inSeconds
                                 }).then((value) async {
                                   await dialog.hide();
                                   value ? Fluttertoast.showToast(msg: 'Podcast Uploaded!') :
