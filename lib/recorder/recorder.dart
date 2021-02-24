@@ -104,7 +104,7 @@ class RecorderExampleState extends State<RecorderExample> {
                     new FlatButton(
                       disabledTextColor: Colors.blueAccent.withOpacity(0.5),
                       disabledColor: Colors.black45,
-                      onPressed: _currentStatus == RecordingStatus.Initialized || _currentStatus == RecordingStatus.Recording ? null : onPlayAudio,
+                      onPressed: _currentStatus == RecordingStatus.Recording ? null : onPlayAudio,
                       child:
                       new Text("Play", style: TextStyle(color: Colors.white)),
                       color: Colors.blueAccent.withOpacity(0.5),

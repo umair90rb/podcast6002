@@ -1,7 +1,9 @@
+
 import 'package:comrade/Dashboard.dart';
 import 'package:comrade/Drawerpages/profilepage.dart';
 import 'package:comrade/services/auth.dart';
 import 'package:comrade/services/db_services.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -9,6 +11,7 @@ import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'changepass.dart';
 import 'editprofile.dart';
+import 'dart:io' as io;
 
 class Myaccount extends StatefulWidget {
   @override
@@ -21,6 +24,7 @@ class _MyaccountState extends State<Myaccount> {
 
   var user;
   String name = '';
+  PlatformFile avatar;
 
   getProfile(String uid){
     _db.getDoc('profile', uid).then((profile) {
@@ -78,11 +82,33 @@ class _MyaccountState extends State<Myaccount> {
             ),
             Padding(
               padding: EdgeInsets.only(top: 40, left: 40, right: 40),
-              child: CircleAvatar(
-                radius: 50.0,
-                backgroundImage:
-                    NetworkImage('https://via.placeholder.com/150'),
-                backgroundColor: Colors.transparent,
+              child: InkWell(
+                onTap: () async {
+                  FilePickerResult result = await FilePicker.platform.pickFiles();
+                  ProgressDialog dialog = ProgressDialog(context);
+                  dialog.style(message: 'Please wait...');
+                  if(result != null) {
+                    await dialog.show();
+                    avatar = result.files.first;
+                    _db.uploadFile('avatars', io.File(result.files.first.path)).then((value) {
+                      _auth.updateUser(value).then((value) async {
+                        await dialog.hide();
+                        setState(() {});
+                        return Fluttertoast.showToast(msg: 'Profile picture updated!');
+                      });
+                    });
+                    setState(() {});
+
+                  } else {
+                    return Fluttertoast.showToast(msg: 'No file selected!');
+                  }
+                },
+                child: CircleAvatar(
+                  radius: 50.0,
+                  backgroundImage:
+                      NetworkImage(user.photoURL == null && avatar == null ?  'https://via.placeholder.com/150' : (user.photoURL == null ? avatar : user.photoURL)),
+                  backgroundColor: Colors.transparent,
+                ),
               ),
             ),
             SizedBox(

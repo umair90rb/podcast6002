@@ -43,6 +43,16 @@ class AuthServices with ChangeNotifier {
     }
   }
 
+  Future<bool> updateUser(String photoUrl) async {
+    try {
+      await _auth.currentUser.updateProfile(photoURL: photoUrl);
+      return true;
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
+
 
   Future<void> signOut() {
     return _auth.signOut();
