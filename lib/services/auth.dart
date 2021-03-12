@@ -1,3 +1,4 @@
+import 'package:comrade/services/db_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
 
@@ -5,6 +6,7 @@ import 'package:flutter/foundation.dart';
 
 class AuthServices with ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final DbServices _db = DbServices();
 
   User get getUser => _auth.currentUser;
 
@@ -46,6 +48,9 @@ class AuthServices with ChangeNotifier {
   Future<bool> updateUser(String photoUrl) async {
     try {
       await _auth.currentUser.updateProfile(photoURL: photoUrl);
+      await _db.updateDoc('profile', getUser.uid, {
+        'photoURL':photoUrl
+      });
       return true;
     } catch (e) {
       print(e);

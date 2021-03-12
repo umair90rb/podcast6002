@@ -28,7 +28,7 @@ class Requestpayment extends StatelessWidget {
         leading: IconButton(
           onPressed: () {
             Navigator.push(
-                context, MaterialPageRoute(builder: (context) => Dashboard()));
+                context, MaterialPageRoute(builder: (context) => Dashboard(user)));
           },
           icon: Icon(
             Icons.arrow_back_ios,

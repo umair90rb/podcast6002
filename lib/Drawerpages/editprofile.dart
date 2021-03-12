@@ -20,6 +20,7 @@ class _EditprofileState extends State<Editprofile> {
   TextEditingController name ;
   TextEditingController qualification ;
   TextEditingController experience ;
+  TextEditingController price;
   TextEditingController description ;
 
   DbServices _db = DbServices();
@@ -35,6 +36,7 @@ class _EditprofileState extends State<Editprofile> {
         qualification = TextEditingController(text: !profile.data().containsKey('qualification') ? null : profile['qualification']);
         experience = TextEditingController(text: !profile.data().containsKey('experience') ? null : profile['experience']);
         description = TextEditingController(text: !profile.data().containsKey('description') ? null : profile['description']);
+        price = TextEditingController(text: !profile.data().containsKey('charges') ? null : profile['charges']);
 
       mounted ? setState(() {}) : null ;
     });
@@ -183,6 +185,29 @@ class _EditprofileState extends State<Editprofile> {
                 left: 10,
                 right: 10,
               ),
+              padding: EdgeInsets.only(bottom: 10),
+              child: TextField(
+                controller: price,
+                onChanged: (value) => {},
+                cursorColor: Colors.orange,
+                maxLines: 1,
+                decoration: InputDecoration(
+                  hintText: "Charges in \$",
+                  filled: true,
+                  focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.orange)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                    borderSide: BorderSide(),
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.only(
+                left: 10,
+                right: 10,
+              ),
               // hack textfield height
               padding: EdgeInsets.only(bottom: 10),
               child: TextField(
@@ -224,7 +249,8 @@ class _EditprofileState extends State<Editprofile> {
                   'name':name.text,
                   'qualification':qualification.text,
                   'experience':experience.text,
-                  'description':description.text
+                  'description':description.text,
+                  'charges': price.text
                 }).then((value) async {
                   await dialog.hide();
                   Fluttertoast.showToast(msg: 'Profile updated');

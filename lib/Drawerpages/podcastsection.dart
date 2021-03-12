@@ -1,12 +1,16 @@
 import 'package:comrade/Drawerpages/record.podcast.dart';
 import 'package:comrade/Drawerpages/uploadpodcasts.dart';
+import 'package:comrade/Drawerpages/yourpodcast.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'undpodcasts.dart';
 import '../Dashboard.dart';
 
 class Podcastsection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    User user = Provider.of<User>(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
@@ -15,7 +19,7 @@ class Podcastsection extends StatelessWidget {
         leading: IconButton(
           onPressed: () {
             Navigator.push(
-                context, MaterialPageRoute(builder: (context) => Dashboard()));
+                context, MaterialPageRoute(builder: (context) => Dashboard(user)));
           },
           icon: Icon(
             Icons.arrow_back_ios,
@@ -114,6 +118,35 @@ class Podcastsection extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => UploadPodcasts()));
+                        },
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(),
+                    child: Card(
+                      elevation: 1,
+                      child: ListTile(
+                        selectedTileColor: Colors.white,
+                        tileColor: Colors.white,
+                        title: Text(
+                          'Your Podcast',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black54,
+                          ),
+                          // textScaleFactor: 1.5,
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      YourPodcast()));
                         },
                       ),
                     ),

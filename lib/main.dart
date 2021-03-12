@@ -1,11 +1,14 @@
+import 'package:comrade/CallScreens/pickup/pickup_layout.dart';
 import 'package:comrade/services/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
+import 'CallScreens/pickup/pickup_screen.dart';
 import 'animation/FadeAnimation.dart';
 import 'login.dart';
+import 'models/call.dart';
 import 'signup.dart';
 
 void main() async {
@@ -24,6 +27,18 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: "Comrade",
+        // home: PickupScreen(
+        //   call: Call(
+        //     callerId: "XWv6KdOWlSVBUyLeg4DOQoN4xdH2",
+        //     callerName: "Umair",
+        //     callerPic: "",
+        //     receiverId: "XWv6KdOWlSVBUyLeg4DOQoN4xdH2",
+        //     hasDialled: false,
+        //     receiverName: "Qais",
+        //     receiverPic: "",
+        //     channelId: "219"
+        //   ),
+        // ),
         home: HomePage(),
       ),
     );
@@ -35,6 +50,10 @@ class MyApp extends StatelessWidget {
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    return homePageScreen(context);
+  }
+
+  Widget homePageScreen(context){
     return Scaffold(
       body: SafeArea(
         child: Container(

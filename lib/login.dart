@@ -116,8 +116,8 @@ class LoginPage extends StatelessWidget {
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => Dashboard()),
-                                  );
+                                        builder: (context) => Dashboard(value),
+                                  ));
                                 } else {
                                   await dialog.hide();
                                   Fluttertoast.showToast(

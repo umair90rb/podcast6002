@@ -15,7 +15,7 @@ showAlertDialog(BuildContext context) {
     ),
     onPressed: () {
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => Dashboard()));
+          context, MaterialPageRoute(builder: (context) => Dashboard(auth.getUser)));
     },
   );
   Widget continueButton = FlatButton(

@@ -204,9 +204,9 @@ class _SignupPageState extends State<SignupPage> {
                         dialog.style(message: 'Please wait...');
                         await dialog.show();
 
-                        auth.signUp(email.text, password.text).then((value) async {
-                          if(value != null){
-                            db.addDataWithId('/profile', value.uid, {
+                        auth.signUp(email.text, password.text).then((user) async {
+                          if(user != null){
+                            db.addDataWithId('/profile', user.uid, {
                               'experties': _myActivity,
                               'type':'podcaster',
                               'email': email.text
@@ -216,7 +216,7 @@ class _SignupPageState extends State<SignupPage> {
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => Dashboard()),
+                                    builder: (context) => Dashboard(user)),
                               );
                             });
 

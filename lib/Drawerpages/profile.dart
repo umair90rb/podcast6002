@@ -1,6 +1,7 @@
 
 import 'package:comrade/Dashboard.dart';
 import 'package:comrade/Drawerpages/profilepage.dart';
+import 'package:comrade/Drawerpages/pubprofile.dart';
 import 'package:comrade/services/auth.dart';
 import 'package:comrade/services/db_services.dart';
 import 'package:file_picker/file_picker.dart';
@@ -106,7 +107,7 @@ class _MyaccountState extends State<Myaccount> {
                 child: CircleAvatar(
                   radius: 50.0,
                   backgroundImage:
-                      NetworkImage(user.photoURL == null && avatar == null ?  'https://via.placeholder.com/150' : (user.photoURL == null ? avatar : user.photoURL)),
+                      (user.photoURL == null && avatar == null ?  NetworkImage('https://via.placeholder.com/150') : (user.photoURL == null ? FileImage(io.File(avatar.path)) : NetworkImage(user.photoURL))),
                   backgroundColor: Colors.transparent,
                 ),
               ),
@@ -210,6 +211,40 @@ class _MyaccountState extends State<Myaccount> {
             ),
             SizedBox(
               height: 5,
+            ),
+            Padding(
+              padding: EdgeInsets.only(),
+              child: Card(
+                elevation: 0,
+                child: ListTile(
+                  selectedTileColor: Colors.white,
+                  tileColor: Colors.white,
+                  leading: Container(
+                    height: 45,
+                    width: 45,
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Icon(
+                        Icons.looks,
+                        color: Colors.orange,
+                        size: 30,
+                      ),
+                    ),
+                  ),
+                  title: Text(
+                    'Review Public Profile',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.black,
+                    ),
+                    // textScaleFactor: 1.5,
+                  ),
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Pubprofile()));
+                  },
+                ),
+              ),
             ),
           ]),
         ),
