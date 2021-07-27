@@ -1,6 +1,6 @@
-import 'package:comrade/Drawerpages/record.podcast.dart';
 import 'package:comrade/Drawerpages/uploadpodcasts.dart';
 import 'package:comrade/Drawerpages/yourpodcast.dart';
+import 'package:comrade/recorder/test_recorder.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -18,8 +18,8 @@ class Podcastsection extends StatelessWidget {
         centerTitle: true,
         leading: IconButton(
           onPressed: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => Dashboard(user)));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => Dashboard(user)));
           },
           icon: Icon(
             Icons.arrow_back_ios,
@@ -28,7 +28,10 @@ class Podcastsection extends StatelessWidget {
         ),
         title: Text(
           "Podcasts",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: "Raleway",
+          ),
         ),
       ),
       body: Container(
@@ -52,6 +55,7 @@ class Podcastsection extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
+                            fontFamily: "Raleway",
                             color: Colors.black54,
                           ),
                           // textScaleFactor: 1.5,
@@ -60,7 +64,7 @@ class Podcastsection extends StatelessWidget {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => Recordpodcasts()));
+                                  builder: (context) => TestRecorder()));
                         },
                       ),
                     ),
@@ -81,6 +85,7 @@ class Podcastsection extends StatelessWidget {
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.black54,
+                            fontFamily: "Raleway",
                           ),
                           // textScaleFactor: 1.5,
                         ),
@@ -107,6 +112,7 @@ class Podcastsection extends StatelessWidget {
                         title: Text(
                           'Upload Podcast From Gallery',
                           style: TextStyle(
+                            fontFamily: "Raleway",
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.black54,
@@ -136,6 +142,7 @@ class Podcastsection extends StatelessWidget {
                           'Your Podcast',
                           style: TextStyle(
                             fontSize: 18,
+                            fontFamily: "Raleway",
                             fontWeight: FontWeight.bold,
                             color: Colors.black54,
                           ),
@@ -145,8 +152,7 @@ class Podcastsection extends StatelessWidget {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      YourPodcast()));
+                                  builder: (context) => YourPodcast()));
                         },
                       ),
                     ),

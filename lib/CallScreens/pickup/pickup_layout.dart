@@ -30,9 +30,9 @@ class PickupLayout extends StatelessWidget {
                 if (!call.hasDialled) {
                   FlutterRingtonePlayer.playRingtone();
                   print("PLAY");
-                  return PickupScreen(
-                    call: call,
-                  );
+                  // return PickupScreen(
+                  //
+                  // );
                 }
                 // print("STOP");
                 print("=====================////====");

@@ -40,7 +40,10 @@ class ForgotPassword extends StatelessWidget {
                           Text(
                             "Forgotten Password?",
                             style: TextStyle(
-                                fontSize: 30, fontWeight: FontWeight.bold),
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: "Raleway",
+                            ),
                           )),
                       SizedBox(
                         height: 20,
@@ -50,7 +53,10 @@ class ForgotPassword extends StatelessWidget {
                           Text(
                             "Fill in your email and send request to reset your password",
                             style: TextStyle(
-                                fontSize: 14, color: Colors.grey[700]),
+                              fontSize: 14,
+                              color: Colors.grey[700],
+                              fontFamily: "Raleway",
+                            ),
                           )),
                     ],
                   ),
@@ -87,7 +93,10 @@ class ForgotPassword extends StatelessWidget {
                             child: Text(
                               "Send Request",
                               style: TextStyle(
-                                  fontWeight: FontWeight.w600, fontSize: 18),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 18,
+                                  fontFamily: "Raleway",
+                                  color: Colors.white),
                             ),
                           ),
                         ),
@@ -117,12 +126,19 @@ class ForgotPassword extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-              fontSize: 15, fontWeight: FontWeight.w400, color: Colors.black87),
+            fontSize: 15,
+            fontWeight: FontWeight.w400,
+            color: Colors.black87,
+            fontFamily: "Raleway",
+          ),
         ),
         SizedBox(
           height: 5,
         ),
         TextField(
+          style: TextStyle(
+            fontFamily: "Raleway",
+          ),
           cursorColor: Colors.orange,
           obscureText: obscureText,
           decoration: InputDecoration(

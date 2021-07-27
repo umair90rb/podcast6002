@@ -22,25 +22,23 @@ class _MentorprofileState extends State<Mentorprofile> {
   final _formKey = GlobalKey<FormState>();
 
   TextEditingController qualification ;
-  TextEditingController charges ;
   TextEditingController experience ;
   TextEditingController description ;
 
   var user;
   String name = '';
   String exper = '';
-  String picture = 'https://via.placeholder.com/150';
+  String picture = '';
 
 
   getProfile(String uid){
     _db.getDoc('profile', uid).then((profile) {
       print(profile);
       mounted ? setState(() {
-        name = profile['name'];
+        name = profile.data().containsKey('name') ? profile['name'] : '';
         exper = profile['experties'];
-        picture = profile.data().containsKey('photoURL') ? profile['photoURL'] : 'https://via.placeholder.com/150';
+        picture = profile.data().containsKey('photoURL') ? profile['photoURL'] : '';
         qualification = TextEditingController(text: !profile.data().containsKey('qualification') ? null : profile['qualification']);
-        charges = TextEditingController(text: !profile.data().containsKey('charges') ? null : profile['charges'].toString());
         experience = TextEditingController(text: !profile.data().containsKey('experience') ? null : profile['experience']);
         description = TextEditingController(text: !profile.data().containsKey('description') ? null : profile['description']);
       }) : null ;
@@ -112,7 +110,7 @@ class _MentorprofileState extends State<Mentorprofile> {
                         child: CircleAvatar(
                           radius: 50.0,
                           backgroundImage:
-                              NetworkImage(picture),
+                               NetworkImage(picture == '' ? 'https://via.placeholder.com/150' : picture),
                           backgroundColor: Colors.transparent,
                         ),
                       ),
@@ -158,30 +156,6 @@ class _MentorprofileState extends State<Mentorprofile> {
                         maxLines: 1,
                         decoration: InputDecoration(
                           hintText: "Experience in field",
-                          filled: true,
-                          focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.orange)),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5.0),
-                            borderSide: BorderSide(),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(
-                        left: 10,
-                        right: 10,
-                      ),
-                      padding: EdgeInsets.only(bottom: 10),
-                      child: TextField(
-                        enabled: false,
-                        onChanged: (value){},
-                        controller: charges,
-                        cursorColor: Colors.orange,
-                        maxLines: 1,
-                        decoration: InputDecoration(
-                          hintText: "Pricing Rate of Mentoring",
                           filled: true,
                           focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.orange)),

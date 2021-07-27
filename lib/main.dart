@@ -1,19 +1,47 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:comrade/CallScreens/pickup/pickup_layout.dart';
 import 'package:comrade/services/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import 'CallScreens/pickup/pickup_screen.dart';
+import 'Dashboard.dart';
 import 'animation/FadeAnimation.dart';
+import 'confirm_email.dart';
 import 'login.dart';
 import 'models/call.dart';
 import 'signup.dart';
+import 'Splash_screen/splash/pages/SplashScreen.dart';
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  var initializationSettingsAndroid =
+      AndroidInitializationSettings('ic_launcher');
+  var initializationSettingsIOS = IOSInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+      onDidReceiveLocalNotification:
+          (int id, String title, String body, String payload) async {});
+  var initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+      onSelectNotification: (String payload) async {
+    if (payload != null) {
+      debugPrint('notification payload: ' + payload);
+    }
+  });
+  await FlutterDownloader.initialize(
+      debug: true // optional: set false to disable printing logs to console
+      );
   runApp(MyApp());
 }
 
@@ -23,29 +51,37 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         StreamProvider<User>.value(value: AuthServices().user),
+        // FutureProvider<DocumentSnapshot>.value(value: AuthServices().profile()),
+        StreamProvider<DocumentSnapshot>.value(value: AuthServices().pro)
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: "Comrade",
-        // home: PickupScreen(
-        //   call: Call(
-        //     callerId: "XWv6KdOWlSVBUyLeg4DOQoN4xdH2",
-        //     callerName: "Umair",
-        //     callerPic: "",
-        //     receiverId: "XWv6KdOWlSVBUyLeg4DOQoN4xdH2",
-        //     hasDialled: false,
-        //     receiverName: "Qais",
-        //     receiverPic: "",
-        //     channelId: "219"
-        //   ),
-        // ),
-        home: HomePage(),
+        home: Root(),
       ),
     );
   }
 }
 
+class Root extends StatelessWidget {
+  const Root({Key key}) : super(key: key);
 
+  @override
+  Widget build(BuildContext context) {
+    User user = Provider.of<User>(context);
+    DocumentSnapshot profile = Provider.of<DocumentSnapshot>(context);
+    print(profile);
+    if (user == null) {
+      return SplashPage();
+    }
+    if (user != null && user.emailVerified) {
+      return Dashboard(user);
+    }
+    if (user != null && !user.emailVerified) {
+      return ConfirmEmail();
+    }
+  }
+}
 
 class HomePage extends StatelessWidget {
   @override
@@ -53,7 +89,7 @@ class HomePage extends StatelessWidget {
     return homePageScreen(context);
   }
 
-  Widget homePageScreen(context){
+  Widget homePageScreen(context) {
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -71,7 +107,10 @@ class HomePage extends StatelessWidget {
                       Text(
                         "Welcome",
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 30),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 30,
+                          fontFamily: "Raleway",
+                        ),
                       )),
                   SizedBox(
                     height: 20,
@@ -81,7 +120,11 @@ class HomePage extends StatelessWidget {
                       Text(
                         "Welcome to Comrade. This is our app for our honorable mentors. Get connect with us and start earning.",
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.grey[700], fontSize: 15),
+                        style: TextStyle(
+                          color: Colors.grey[700],
+                          fontSize: 15,
+                          fontFamily: "Raleway",
+                        ),
                       )),
                 ],
               ),
@@ -112,7 +155,10 @@ class HomePage extends StatelessWidget {
                         child: Text(
                           "Login",
                           style: TextStyle(
-                              fontWeight: FontWeight.w600, fontSize: 18),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 18,
+                            fontFamily: "Raleway",
+                          ),
                         ),
                       )),
                   SizedBox(
@@ -146,7 +192,11 @@ class HomePage extends StatelessWidget {
                           child: Text(
                             "Sign up",
                             style: TextStyle(
-                                fontWeight: FontWeight.w600, fontSize: 18),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 18,
+                              color: Colors.white,
+                              fontFamily: "Raleway",
+                            ),
                           ),
                         ),
                       ))

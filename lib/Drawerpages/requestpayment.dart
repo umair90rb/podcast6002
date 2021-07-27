@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:comrade/services/db_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -16,10 +17,9 @@ class Requestpayment extends StatelessWidget {
   TextEditingController detail = TextEditingController();
   @override
   Widget build(BuildContext context) {
-
     var size = MediaQuery.of(context).size;
     var user = Provider.of<User>(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
@@ -27,8 +27,8 @@ class Requestpayment extends StatelessWidget {
         centerTitle: true,
         leading: IconButton(
           onPressed: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => Dashboard(user)));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => Dashboard(user)));
           },
           icon: Icon(
             Icons.arrow_back_ios,
@@ -37,7 +37,10 @@ class Requestpayment extends StatelessWidget {
         ),
         title: Text(
           "Request Payment",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: "Raleway",
+          ),
         ),
       ),
       body: Container(
@@ -50,7 +53,11 @@ class Requestpayment extends StatelessWidget {
               padding: EdgeInsets.only(left: 10),
               child: Center(
                 child: Text(
-                    "Please if you have decent amount of earnings in your account let the support know to pay you."),
+                  "Please if you have decent amount of earnings in your account let the support know to pay you.",
+                  style: TextStyle(
+                    fontFamily: "Raleway",
+                  ),
+                ),
               ),
             ),
             Container(
@@ -61,11 +68,17 @@ class Requestpayment extends StatelessWidget {
               ),
               padding: EdgeInsets.only(bottom: 10),
               child: TextField(
+                style: TextStyle(
+                  fontFamily: "Raleway",
+                ),
                 controller: name,
                 cursorColor: Colors.orange,
                 maxLines: 1,
                 decoration: InputDecoration(
                   hintText: "Name",
+                  hintStyle: TextStyle(
+                    fontFamily: "Raleway",
+                  ),
                   filled: true,
                   focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.orange)),
@@ -83,12 +96,18 @@ class Requestpayment extends StatelessWidget {
               ),
               padding: EdgeInsets.only(bottom: 10),
               child: TextField(
+                style: TextStyle(
+                  fontFamily: "Raleway",
+                ),
                 enabled: false,
                 controller: TextEditingController(text: user.email),
                 maxLines: 1,
                 cursorColor: Colors.orange,
                 decoration: InputDecoration(
                   hintText: "Email",
+                  hintStyle: TextStyle(
+                    fontFamily: "Raleway",
+                  ),
                   filled: true,
                   focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.orange)),
@@ -106,11 +125,17 @@ class Requestpayment extends StatelessWidget {
               ),
               padding: EdgeInsets.only(bottom: 10),
               child: TextField(
+                style: TextStyle(
+                  fontFamily: "Raleway",
+                ),
                 controller: earning,
                 cursorColor: Colors.orange,
                 maxLines: 1,
                 decoration: InputDecoration(
                   hintText: "How much earnings do you have",
+                  hintStyle: TextStyle(
+                    fontFamily: "Raleway",
+                  ),
                   filled: true,
                   focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.orange)),
@@ -128,11 +153,17 @@ class Requestpayment extends StatelessWidget {
               ),
               padding: EdgeInsets.only(bottom: 10),
               child: TextField(
+                style: TextStyle(
+                  fontFamily: "Raleway",
+                ),
                 controller: account,
                 cursorColor: Colors.orange,
                 maxLines: 1,
                 decoration: InputDecoration(
                   hintText: "Account Number",
+                  hintStyle: TextStyle(
+                    fontFamily: "Raleway",
+                  ),
                   filled: true,
                   focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.orange)),
@@ -151,12 +182,18 @@ class Requestpayment extends StatelessWidget {
               // hack textfield height
               padding: EdgeInsets.only(bottom: 10),
               child: TextField(
+                style: TextStyle(
+                  fontFamily: "Raleway",
+                ),
                 controller: detail,
                 cursorColor: Colors.orange,
                 maxLines: 10,
                 decoration: InputDecoration(
                   hintText:
                       "Please write a small message request to let the admin know you have correct details given and how much earnings do you have.",
+                  hintStyle: TextStyle(
+                    fontFamily: "Raleway",
+                  ),
                   filled: true,
                   focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.orange)),
@@ -170,37 +207,61 @@ class Requestpayment extends StatelessWidget {
             SizedBox(
               height: 20,
             ),
-            NiceButton(
-              background: Colors.white,
-              width: size.width * 0.30,
-              radius: 10,
-              padding: const EdgeInsets.all(10),
-              text: "Send",
-              gradientColors: [Colors.orange, Colors.orange],
-              onPressed: () async {
-                if(name.text.isEmpty || earning.text.isEmpty || account.text.isEmpty){
-                  return Fluttertoast.showToast(msg: 'Name/Earning/Account No is required!');
-                }
-                ProgressDialog dialog = ProgressDialog(context);
-                dialog.style(message: 'Please wait...');
-                await dialog.show();
-                db.addCollection('paymentRequests', user.uid, "paymentRequest", DateTime.now().millisecondsSinceEpoch.toString(), {
-                  'uid':user.uid,
-                  'email':user.email,
-                  'name':name.text,
-                  'earning': earning.text,
-                  'account':account.text,
-                  'detail':detail.text
-                }).then((value) async {
-                  if(!value){
-                    await dialog.hide();
-                    Fluttertoast.showToast(msg: 'Something goes wrong!');
-                  }
-                  await dialog.hide();
-                  Fluttertoast.showToast(msg: 'Request submitted, admin will contact you soon!');
-                  Navigator.pop(context);
-                });
-              },
+            Padding(
+              padding: EdgeInsets.only(top: 20),
+              child: SizedBox(
+                width: 370.0,
+                height: 50.0,
+                child: RaisedButton(
+                  splashColor: Colors.white,
+                  elevation: 2,
+                  color: Colors.orange,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  onPressed: () async {
+                    if (name.text.isEmpty ||
+                        earning.text.isEmpty ||
+                        account.text.isEmpty) {
+                      return Fluttertoast.showToast(
+                          msg: 'Name/Earning/Account No is required!');
+                    }
+                    ProgressDialog dialog = ProgressDialog(context);
+                    dialog.style(
+                        message: 'Please wait...',
+                        progressTextStyle: TextStyle(
+                          fontFamily: "Raleway",
+                        ));
+                    await dialog.show();
+                    db.addData('paymentRequests', {
+                      'uid': user.uid,
+                      'email': user.email,
+                      'name': name.text,
+                      'earning': earning.text,
+                      'account': account.text,
+                      'detail': detail.text,
+                      'at': Timestamp.now()
+                    }).then((value) async {
+                      if (!value) {
+                        await dialog.hide();
+                        Fluttertoast.showToast(msg: 'Something goes wrong!');
+                      }
+                      await dialog.hide();
+                      Fluttertoast.showToast(
+                          msg:
+                              'Request submitted, admin will contact you soon!');
+                      Navigator.pop(context);
+                    });
+                  },
+                  child: Text(
+                    "Send",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: "Raleway",
+                        fontSize: 20),
+                  ),
+                ),
+              ),
             ),
           ]),
         ),

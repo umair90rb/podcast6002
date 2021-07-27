@@ -18,8 +18,8 @@ class Termsandpolicies extends StatelessWidget {
         elevation: 0.0,
         leading: IconButton(
           onPressed: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => Dashboard(user)));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => Dashboard(user)));
           },
           icon: Icon(
             Icons.arrow_back_ios,
@@ -28,7 +28,10 @@ class Termsandpolicies extends StatelessWidget {
         ),
         title: Text(
           "Terms & Policies",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: "Raleway",
+          ),
         ),
       ),
       body: Container(
@@ -43,6 +46,9 @@ class Termsandpolicies extends StatelessWidget {
                   child: Container(
                     child: Text(
                       randomtext,
+                      style: TextStyle(
+                        fontFamily: "Raleway",
+                      ),
                     ),
                   )),
               SizedBox(

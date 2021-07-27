@@ -1,11 +1,15 @@
+import 'dart:io';
+
 import 'package:comrade/login.dart';
 import 'package:comrade/services/auth.dart';
 import 'package:comrade/services/db_services.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'Dashboard.dart';
 import 'animation/FadeAnimation.dart';
+import 'confirm_email.dart';
 
 import 'package:dropdown_formfield/dropdown_formfield.dart';
 
@@ -17,6 +21,9 @@ class SignupPage extends StatefulWidget {
 class _SignupPageState extends State<SignupPage> {
   String _myActivity;
   String _myActivityResult;
+
+  List docs = [];
+  List id = [];
 
   final formKey = new GlobalKey<FormState>();
 
@@ -128,7 +135,6 @@ class _SignupPageState extends State<SignupPage> {
       body: SingleChildScrollView(
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 40),
-          height: MediaQuery.of(context).size.height - 50,
           width: double.infinity,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -140,7 +146,10 @@ class _SignupPageState extends State<SignupPage> {
                       Text(
                         "Sign up",
                         style: TextStyle(
-                            fontSize: 30, fontWeight: FontWeight.bold),
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: "Raleway",
+                        ),
                       )),
                   SizedBox(
                     height: 15,
@@ -149,7 +158,11 @@ class _SignupPageState extends State<SignupPage> {
                       1.2,
                       Text(
                         "Create your mentoring account, It's free",
-                        style: TextStyle(fontSize: 15, color: Colors.grey[700]),
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.grey[700],
+                          fontFamily: "Raleway",
+                        ),
                       )),
                 ],
               ),
@@ -157,9 +170,13 @@ class _SignupPageState extends State<SignupPage> {
                 children: <Widget>[
                   FadeAnimation(1.2, makeInput(email, label: "Email")),
                   FadeAnimation(
-                      1.3, makeInput(password, label: "Password", obscureText: true)),
-                  FadeAnimation(1.4,
-                      makeInput(confirmPassword, label: "Confirm Password", obscureText: true)),
+                      1.3,
+                      makeInput(password,
+                          label: "Password", obscureText: true)),
+                  FadeAnimation(
+                      1.4,
+                      makeInput(confirmPassword,
+                          label: "Confirm Password", obscureText: true)),
                   FadeAnimation(
                     1.3,
                     Padding(
@@ -169,6 +186,11 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                 ],
               ),
+              FadeAnimation(
+                  1.5,
+                  _selectImage(id, "Add National ID/Driver Licence",
+                      single: true)),
+              FadeAnimation(1.5, _selectImage(docs, "Add Important Documents")),
               FadeAnimation(
                   1.5,
                   Container(
@@ -185,9 +207,10 @@ class _SignupPageState extends State<SignupPage> {
                       minWidth: double.infinity,
                       height: 60,
                       onPressed: () async {
-
-                        if(email.text.isEmpty || password.text.isEmpty || _myActivity.isEmpty || confirmPassword.text.isEmpty){
-
+                        if (email.text.isEmpty ||
+                            password.text.isEmpty ||
+                            _myActivity.isEmpty ||
+                            confirmPassword.text.isEmpty) {
                           return Fluttertoast.showToast(
                               msg: "All fields require!",
                               toastLength: Toast.LENGTH_SHORT,
@@ -195,44 +218,111 @@ class _SignupPageState extends State<SignupPage> {
                               timeInSecForIosWeb: 1,
                               backgroundColor: Colors.red,
                               textColor: Colors.white,
-                              fontSize: 16.0
-                          );
-
+                              fontSize: 16.0);
+                        }
+                        if (id.isEmpty) {
+                          return Fluttertoast.showToast(
+                              msg: "Please add National ID or Driver Licence",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.CENTER,
+                              timeInSecForIosWeb: 1,
+                              backgroundColor: Colors.red,
+                              textColor: Colors.white,
+                              fontSize: 16.0);
                         }
 
                         ProgressDialog dialog = ProgressDialog(context);
-                        dialog.style(message: 'Please wait...');
+                        dialog.style(
+                            message: 'Please wait...',
+                            progressTextStyle: TextStyle(
+                              fontFamily: "Raleway",
+                            ));
                         await dialog.show();
 
-                        auth.signUp(email.text, password.text).then((user) async {
-                          if(user != null){
-                            db.addDataWithId('/profile', user.uid, {
-                              'experties': _myActivity,
-                              'type':'podcaster',
-                              'email': email.text
-                            }).then((value) async {
-                              print(value);
-                              await dialog.hide();
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Dashboard(user)),
-                              );
-                            });
+                        try {
+                          auth
+                              .signUp(email.text, password.text)
+                              .then((user) async {
+                            if (user != null) {
+                              String idUrl = await db.uploadFile(
+                                  "images/${user.uid}/", File(id.first));
+                              List docsUrl = docs.isNotEmpty
+                                  ? await uploadImage(docs, user)
+                                  : [];
+                              db.addDataWithId('/profile', user.uid, {
+                                'experties': _myActivity,
+                                'type': 'podcaster',
+                                'email': email.text,
+                                'approved': false,
+                                'id': idUrl,
+                                'docs': docsUrl
+                              }).then((value) async {
+                                print(value);
+                                await auth.sendEmailVerificationLink();
+                                await dialog.hide();
 
-                          } else {
-                            await dialog.hide();
-                            Fluttertoast.showToast(
-                                msg: "Something goes wrong!",
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.CENTER,
-                                timeInSecForIosWeb: 1,
-                                backgroundColor: Colors.red,
-                                textColor: Colors.white,
-                                fontSize: 16.0
-                            );
-                          }
-                        });
+                                return showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        clipBehavior: Clip.hardEdge,
+                                        title: Text(
+                                          'Next step!',
+                                          style: TextStyle(
+                                            fontFamily: "Raleway",
+                                          ),
+                                        ),
+                                        content: Text(
+                                          'Please confirm your email address. Check your email and click on the link and login again.',
+                                          style: TextStyle(
+                                            fontFamily: "Raleway",
+                                          ),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(context),
+                                              child: Text(
+                                                'Cancel',
+                                                style: TextStyle(
+                                                  fontFamily: "Raleway",
+                                                ),
+                                              )),
+                                          TextButton(
+                                              onPressed: () =>
+                                                  Navigator.pushReplacement(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              LoginPage())),
+                                              child: Text('Login')),
+                                        ],
+                                      );
+                                    });
+                              });
+                            } else {
+                              await dialog.hide();
+                              Fluttertoast.showToast(
+                                  msg:
+                                      "Something goes wrong or email already exist.",
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.CENTER,
+                                  timeInSecForIosWeb: 1,
+                                  backgroundColor: Colors.red,
+                                  textColor: Colors.white,
+                                  fontSize: 16.0);
+                            }
+                          });
+                        } catch (ex) {
+                          Fluttertoast.showToast(
+                              msg: ex.toString(),
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.CENTER,
+                              timeInSecForIosWeb: 1,
+                              backgroundColor: Colors.red,
+                              textColor: Colors.white,
+                              fontSize: 16.0);
+                        }
                       },
                       color: Colors.orange,
                       elevation: 0,
@@ -241,10 +331,16 @@ class _SignupPageState extends State<SignupPage> {
                       child: Text(
                         "Sign up",
                         style: TextStyle(
-                            fontWeight: FontWeight.w600, fontSize: 18),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 18,
+                            fontFamily: "Raleway",
+                            color: Colors.white),
                       ),
                     ),
                   )),
+              SizedBox(
+                height: 15,
+              ),
               FadeAnimation(
                 1.6,
                 Padding(
@@ -260,6 +356,7 @@ class _SignupPageState extends State<SignupPage> {
                       "Login if already have an account",
                       style: TextStyle(
                           color: Colors.black,
+                          fontFamily: "Raleway",
                           fontSize: 15,
                           fontWeight: FontWeight.bold),
                     ),
@@ -269,6 +366,86 @@ class _SignupPageState extends State<SignupPage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Future uploadImage(List images, user) async {
+    List urls = [];
+    await Future.wait(
+      images.map((e) async {
+        String url = e.runtimeType == String
+            ? e
+            : await db.uploadFile('images/${user.uid}/', e);
+        urls.add(url);
+      }),
+    );
+    return urls;
+  }
+
+  _selectImage(List images, String label, {bool single = false}) {
+    print(images);
+    return Padding(
+      padding: EdgeInsets.all(10),
+      child: Column(
+        children: [
+          SizedBox(
+            width: double.maxFinite,
+            child: ElevatedButton(
+              onPressed: () async {
+                FilePickerResult result = await FilePicker.platform
+                    .pickFiles(type: FileType.image, allowMultiple: !single);
+                if (result != null) {
+                  images.clear();
+                  setState(() {
+                    images.addAll(!single
+                        ? result.paths.map((path) => File(path)).toList()
+                        : [result.paths.first]);
+                  });
+                } else {
+                  return Fluttertoast.showToast(msg: 'No file chosen!');
+                }
+              },
+              child: Text(label),
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Colors.orange),
+              ),
+            ),
+          ),
+          SizedBox(
+            height: images == null || images.length == 0 ? 0 : 125,
+            child: !single
+                ? ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: images.length,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        margin: EdgeInsets.all(5),
+                        child: Image.file(
+                          images[index],
+                          fit: BoxFit.cover,
+                          width: 100,
+                          height: 100,
+                        ),
+                        clipBehavior: Clip.hardEdge,
+                      );
+                    },
+                  )
+                : images.isNotEmpty
+                    ? Card(
+                        margin: EdgeInsets.all(5),
+                        child: Image.file(
+                          File(images[0]),
+                          fit: BoxFit.cover,
+                          width: 100,
+                          height: 100,
+                        ),
+                        clipBehavior: Clip.hardEdge,
+                      )
+                    : Container(),
+          )
+        ],
       ),
     );
   }

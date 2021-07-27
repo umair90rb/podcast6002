@@ -6,9 +6,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'animation/FadeAnimation.dart';
 import 'forgotpass.dart';
+import 'confirm_email.dart';
 
 class LoginPage extends StatelessWidget {
-
   AuthServices auth = AuthServices();
   DbServices db = DbServices();
 
@@ -52,7 +52,10 @@ class LoginPage extends StatelessWidget {
                           Text(
                             "Login",
                             style: TextStyle(
-                                fontSize: 30, fontWeight: FontWeight.bold),
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: "Raleway",
+                            ),
                           )),
                       SizedBox(
                         height: 20,
@@ -62,7 +65,10 @@ class LoginPage extends StatelessWidget {
                           Text(
                             "Login to your account",
                             style: TextStyle(
-                                fontSize: 15, color: Colors.grey[700]),
+                              fontSize: 15,
+                              color: Colors.grey[700],
+                              fontFamily: "Raleway",
+                            ),
                           )),
                     ],
                   ),
@@ -76,8 +82,10 @@ class LoginPage extends StatelessWidget {
                               email,
                               label: "Email",
                             )),
-                        FadeAnimation(1.3,
-                            makeInput(password, label: "Password", obscureText: true)),
+                        FadeAnimation(
+                            1.3,
+                            makeInput(password,
+                                label: "Password", obscureText: true)),
                       ],
                     ),
                   ),
@@ -99,25 +107,109 @@ class LoginPage extends StatelessWidget {
                             minWidth: double.infinity,
                             height: 60,
                             onPressed: () async {
-
-                              if(email.text.isEmpty || password.text.isEmpty ){
+                              if (email.text.isEmpty || password.text.isEmpty) {
                                 return Fluttertoast.showToast(
                                   msg: "Usename/Password required!",
                                   toastLength: Toast.LENGTH_SHORT,
                                 );
                               }
                               ProgressDialog dialog = ProgressDialog(context);
-                              dialog.style(message: 'Please wait...');
-                              await dialog.show();
-                              auth.emailSignIn(email.text, password.text).then((value) async {
-
-                                if(value != null){
-                                  await dialog.hide();
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Dashboard(value),
+                              dialog.style(
+                                  message: 'Please wait...',
+                                  messageTextStyle: TextStyle(
+                                    fontFamily: "Raleway",
                                   ));
+                              await dialog.show();
+                              auth
+                                  .emailSignIn(email.text, password.text)
+                                  .then((value) async {
+                                if (value != null) {
+                                  await dialog.hide();
+                                  if (value.emailVerified) {
+                                    db
+                                        .getDoc('/profile', value.uid)
+                                        .then((profile) {
+                                      if (profile
+                                              .data()
+                                              .containsKey('approved') &&
+                                          profile['approved'] == true) {
+                                        Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  Dashboard(value),
+                                            ));
+                                      } else {
+                                        return showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return AlertDialog(
+                                                clipBehavior: Clip.hardEdge,
+                                                // titlePadding: EdgeInsets.all(10),
+                                                // contentPadding: EdgeInsets.all(10),
+                                                title: Text(
+                                                  'Wait for Admin Approval!',
+                                                  style: TextStyle(
+                                                    fontFamily: "Raleway",
+                                                  ),
+                                                ),
+                                                content: Text(
+                                                  'Please wait until admin approves your account!',
+                                                  style: TextStyle(
+                                                    fontFamily: "Raleway",
+                                                  ),
+                                                ),
+                                                actions: [
+                                                  TextButton(
+                                                      onPressed: () =>
+                                                          Navigator.pop(
+                                                              context),
+                                                      child: Text(
+                                                        'Got it',
+                                                        style: TextStyle(
+                                                          color: Colors.orange,
+                                                          fontFamily: "Raleway",
+                                                        ),
+                                                      )),
+                                                ],
+                                              );
+                                            });
+                                      }
+                                    });
+                                  } else {
+                                    return showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            clipBehavior: Clip.hardEdge,
+                                            // titlePadding: EdgeInsets.all(10),
+                                            // contentPadding: EdgeInsets.all(10),
+                                            title: Text(
+                                              'Confirm your Email!',
+                                              style: TextStyle(
+                                                fontFamily: "Raleway",
+                                              ),
+                                            ),
+                                            content: Text(
+                                              'Please confirm your email address. Check your email and click on the link and login again.',
+                                              style: TextStyle(
+                                                fontFamily: "Raleway",
+                                              ),
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(context),
+                                                  child: Text(
+                                                    'Cancel',
+                                                    style: TextStyle(
+                                                      fontFamily: "Raleway",
+                                                    ),
+                                                  )),
+                                            ],
+                                          );
+                                        });
+                                  }
                                 } else {
                                   await dialog.hide();
                                   Fluttertoast.showToast(
@@ -139,7 +231,11 @@ class LoginPage extends StatelessWidget {
                             child: Text(
                               "Login",
                               style: TextStyle(
-                                  fontWeight: FontWeight.w600, fontSize: 18),
+                                fontWeight: FontWeight.w600,
+                                fontSize: 18,
+                                color: Colors.white,
+                                fontFamily: "Raleway",
+                              ),
                             ),
                           ),
                         ),
@@ -156,7 +252,11 @@ class LoginPage extends StatelessWidget {
                       },
                       child: Text(
                         "Forgotten Password?",
-                        style: TextStyle(color: Colors.black, fontSize: 16),
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontFamily: "Raleway",
+                        ),
                       ),
                     ),
                   ),
@@ -185,12 +285,19 @@ class LoginPage extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-              fontSize: 15, fontWeight: FontWeight.w400, color: Colors.black87),
+            fontSize: 15,
+            fontWeight: FontWeight.w400,
+            color: Colors.black87,
+            fontFamily: "Raleway",
+          ),
         ),
         SizedBox(
           height: 5,
         ),
         TextField(
+          style: TextStyle(
+            fontFamily: "Raleway",
+          ),
           controller: controller,
           obscureText: obscureText,
           cursorColor: Colors.orange,

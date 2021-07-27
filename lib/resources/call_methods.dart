@@ -5,8 +5,27 @@ class CallMethods {
   final CollectionReference callCollection =
       FirebaseFirestore.instance.collection("call");
 
-  Stream<DocumentSnapshot> callStream({String uid}) =>
-      callCollection.doc(uid).snapshots();
+  var msgCollection =
+  FirebaseFirestore.instance.collection("msgRequest");
+
+
+  Stream callStream({String uid}){
+    Query query = FirebaseFirestore.instance.collection("call");
+    query = query.where('pid', isEqualTo: uid);
+    query = query.where('status', isEqualTo: 'dialing');
+    return query.snapshots();
+
+  }
+
+  Stream<QuerySnapshot> msgStream({String uid}){
+    Query query = FirebaseFirestore.instance.collection("msgRequest");
+    query = query.where('to', isEqualTo: uid);
+    query = query.where('read', isEqualTo: false);
+    return query.snapshots();
+  }
+
+
+
 
   Future<bool> makeCall({Call call}) async {
     try {

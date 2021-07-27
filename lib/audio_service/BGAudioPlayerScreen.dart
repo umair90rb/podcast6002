@@ -13,31 +13,31 @@ class BGAudioPlayerScreen extends StatefulWidget {
 
 class _BGAudioPlayerScreenState extends State<BGAudioPlayerScreen> {
   final BehaviorSubject<double> _dragPositionSubject =
-  BehaviorSubject.seeded(null);
+      BehaviorSubject.seeded(null);
   MediaItem item;
-  _BGAudioPlayerScreenState(item){
+  _BGAudioPlayerScreenState(item) {
     _queue = <MediaItem>[item];
   }
 
-  var _queue ;
-    // MediaItem(
-    //   id: "https://s3.amazonaws.com/scifri-episodes/scifri20181123-episode.mp3",
-    //   album: "Science Friday",
-    //   title: "A Salute To Head-Scratching Science",
-    //   artist: "Science Friday and WNYC Studios",
-    //   duration: Duration(milliseconds: 5739820),
-    //   artUri:
-    //   "https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg",
-    // ),
-    // MediaItem(
-    //   id: "https://s3.amazonaws.com/scifri-segments/scifri201711241.mp3",
-    //   album: "Science Friday",
-    //   title: "From Cat Rheology To Operatic Incompetence",
-    //   artist: "Science Friday and WNYC Studios",
-    //   duration: Duration(milliseconds: 2856950),
-    //   artUri:
-    //   "https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg",
-    // ),
+  var _queue;
+  // MediaItem(
+  //   id: "https://s3.amazonaws.com/scifri-episodes/scifri20181123-episode.mp3",
+  //   album: "Science Friday",
+  //   title: "A Salute To Head-Scratching Science",
+  //   artist: "Science Friday and WNYC Studios",
+  //   duration: Duration(milliseconds: 5739820),
+  //   artUri:
+  //   "https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg",
+  // ),
+  // MediaItem(
+  //   id: "https://s3.amazonaws.com/scifri-segments/scifri201711241.mp3",
+  //   album: "Science Friday",
+  //   title: "From Cat Rheology To Operatic Incompetence",
+  //   artist: "Science Friday and WNYC Studios",
+  //   duration: Duration(milliseconds: 2856950),
+  //   artUri:
+  //   "https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg",
+  // ),
   // ];
 
   bool _loading;
@@ -54,8 +54,7 @@ class _BGAudioPlayerScreenState extends State<BGAudioPlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return 
-      Scaffold(
+    return Scaffold(
       // appBar: AppBar(
       //   title: Text('Audio Player'),
       // ),
@@ -85,9 +84,10 @@ class _BGAudioPlayerScreenState extends State<BGAudioPlayerScreen> {
                     //   _startAudioPlayerBtn(),
                     // ] else
                     //   ...[
-                      //positionIndicator(mediaItem, playbackState),
+                    //positionIndicator(mediaItem, playbackState),
                     Container(
-                      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 50),
+                      margin:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 50),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
@@ -108,8 +108,9 @@ class _BGAudioPlayerScreenState extends State<BGAudioPlayerScreen> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
                         child: Image(
-                          image: NetworkImage(
-                              mediaItem?.artUri != null ? mediaItem.artUri : ''),
+                          image: NetworkImage(mediaItem?.artUri != null
+                              ? mediaItem.artUri
+                              : ''),
                           width: MediaQuery.of(context).size.width * 0.7,
                           height: MediaQuery.of(context).size.width * 0.7,
                           fit: BoxFit.cover,
@@ -118,79 +119,87 @@ class _BGAudioPlayerScreenState extends State<BGAudioPlayerScreen> {
                     ),
 
                     SizedBox(height: 10),
-                    if (mediaItem?.album != null) Text(mediaItem.album, style: TextStyle(fontSize: 20),),
+                    if (mediaItem?.album != null)
+                      Text(
+                        mediaItem.album,
+                        style: TextStyle(fontSize: 20),
+                      ),
                     SizedBox(height: 10),
                     if (mediaItem?.title != null) Text(mediaItem.title),
-                      SizedBox(height: 10),
+                    SizedBox(height: 10),
                     if (mediaItem?.artist != null) Text(mediaItem.artist),
                     SizedBox(height: 10),
-                    if(mediaItem?.id != null) positionIndicator(mediaItem, playbackState),
-                      SizedBox(height: 10,),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          IconButton(
-                            icon: Icon(Icons.arrow_back_ios_sharp),
-                            iconSize: 40.0,
-                            onPressed: (){
-                              Navigator.pop(context);
-                            },
-                          ),
-                          !playing
-                              ? IconButton(
-                            icon: Icon(Icons.play_arrow),
-                            iconSize: 64.0,
-                            onPressed: () async {
-                              print(processingState);
-                              if(processingState == AudioProcessingState.none){
-                                _startAudioPlayerBtn();
-                              }
-                              AudioService.play();
-                            },
-                          )
-                              : IconButton(
-                            icon: Icon(Icons.pause),
-                            iconSize: 64.0,
-                            onPressed: AudioService.pause,
-                          ),
-                          playing || processingState == AudioProcessingState.ready
-                              ? IconButton(
-                            icon: Icon(Icons.stop),
-                            iconSize: 64.0,
-                            onPressed: () async {
-                              print(processingState);
-                              await AudioService.stop();
-                            },
-                          )
-                              : Container(),
+                    if (mediaItem?.id != null)
+                      positionIndicator(mediaItem, playbackState),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.arrow_back_ios_sharp),
+                          iconSize: 40.0,
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                        !playing
+                            ? IconButton(
+                                icon: Icon(Icons.play_arrow),
+                                iconSize: 64.0,
+                                onPressed: () async {
+                                  print(processingState);
+                                  if (processingState ==
+                                      AudioProcessingState.none) {
+                                    _startAudioPlayerBtn();
+                                  }
+                                  AudioService.play();
+                                },
+                              )
+                            : IconButton(
+                                icon: Icon(Icons.pause),
+                                iconSize: 64.0,
+                                onPressed: AudioService.pause,
+                              ),
+                        playing || processingState == AudioProcessingState.ready
+                            ? IconButton(
+                                icon: Icon(Icons.stop),
+                                iconSize: 64.0,
+                                onPressed: () async {
+                                  print(processingState);
+                                  await AudioService.stop();
+                                },
+                              )
+                            : Container(),
 
-                          // Row(
-                          //   mainAxisAlignment: MainAxisAlignment.center,
-                          //   children: [
-                          //     IconButton(
-                          //       icon: Icon(Icons.skip_previous),
-                          //       iconSize: 64,
-                          //       onPressed: () {
-                          //         if (mediaItem == queue.first) {
-                          //           return;
-                          //         }
-                          //         AudioService.skipToPrevious();
-                          //       },
-                          //     ),
-                          //     IconButton(
-                          //       icon: Icon(Icons.skip_next),
-                          //       iconSize: 64,
-                          //       onPressed: () {
-                          //         if (mediaItem == queue.last) {
-                          //           return;
-                          //         }
-                          //         AudioService.skipToNext();
-                          //       },
-                          //     )
-                          //   ],
-                          // ),
-                        ],
-                      )
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.center,
+                        //   children: [
+                        //     IconButton(
+                        //       icon: Icon(Icons.skip_previous),
+                        //       iconSize: 64,
+                        //       onPressed: () {
+                        //         if (mediaItem == queue.first) {
+                        //           return;
+                        //         }
+                        //         AudioService.skipToPrevious();
+                        //       },
+                        //     ),
+                        //     IconButton(
+                        //       icon: Icon(Icons.skip_next),
+                        //       iconSize: 64,
+                        //       onPressed: () {
+                        //         if (mediaItem == queue.last) {
+                        //           return;
+                        //         }
+                        //         AudioService.skipToNext();
+                        //       },
+                        //     )
+                        //   ],
+                        // ),
+                      ],
+                    )
                     // ]
                   ],
                 ),
@@ -244,7 +253,7 @@ class _BGAudioPlayerScreenState extends State<BGAudioPlayerScreen> {
       stream: Rx.combineLatest2<double, double, double>(
           _dragPositionSubject.stream,
           Stream.periodic(Duration(milliseconds: 200)),
-              (dragPosition, _) => dragPosition),
+          (dragPosition, _) => dragPosition),
       builder: (context, snapshot) {
         double position =
             snapshot.data ?? state.currentPosition.inMilliseconds.toDouble();
@@ -273,12 +282,18 @@ class _BGAudioPlayerScreenState extends State<BGAudioPlayerScreen> {
                   _dragPositionSubject.add(null);
                 },
               ),
-            Text("${_printDuration(state.currentPosition)}"),
+            Text(
+              "${_printDuration(state.currentPosition)}",
+              style: TextStyle(
+                fontFamily: "Raleway",
+              ),
+            ),
           ],
         );
       },
     );
   }
+
   String _printDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, "0");
     String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
@@ -293,7 +308,7 @@ Stream<AudioState> get _audioStateStream {
     AudioService.queueStream,
     AudioService.currentMediaItemStream,
     AudioService.playbackStateStream,
-        (queue, mediaItem, playbackState) => AudioState(
+    (queue, mediaItem, playbackState) => AudioState(
       queue,
       mediaItem,
       playbackState,

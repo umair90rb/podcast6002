@@ -79,9 +79,18 @@ class _LogListContainerState extends State<LogListContainer> {
                         onLongPress: () => showDialog(
                             context: context,
                             builder: (context) => AlertDialog(
-                                  title: Text("Delete this Log?"),
+                                  title: Text(
+                                    "Delete this Log?",
+                                    style: TextStyle(
+                                      fontFamily: "Raleway",
+                                    ),
+                                  ),
                                   content: Text(
-                                      "Are you sure you want to delete this log?"),
+                                    "Are you sure you want to delete this log?",
+                                    style: TextStyle(
+                                      fontFamily: "Raleway",
+                                    ),
+                                  ),
                                   actions: [
                                     FlatButton(
                                       child: Text("YES"),
@@ -99,7 +108,12 @@ class _LogListContainerState extends State<LogListContainer> {
                                       },
                                     ),
                                     FlatButton(
-                                      child: Text("NO"),
+                                      child: Text(
+                                        "NO",
+                                        style: TextStyle(
+                                          fontFamily: "Raleway",
+                                        ),
+                                      ),
                                       onPressed: () => Navigator.pop(context),
                                     ),
                                   ],
@@ -149,6 +163,7 @@ class _LogListContainerState extends State<LogListContainer> {
                                                           _log["timestamp"])),
                                                   style: TextStyle(
                                                       fontSize: 14,
+                                                      fontFamily: "Raleway",
                                                       color:
                                                           Colors.grey.shade500,
                                                       fontStyle:
@@ -176,11 +191,17 @@ class _LogListContainerState extends State<LogListContainer> {
                       Text(
                         "This is where all your call logs are listed",
                         style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: "Raleway",
+                        ),
                       ),
                       Text(
                         "Call people with just one click",
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontFamily: "Raleway",
+                        ),
                       ),
                     ],
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -196,12 +217,18 @@ class _LogListContainerState extends State<LogListContainer> {
                   children: [
                     Text(
                       "This is where all your call logs are listed",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: "Raleway",
+                      ),
                     ),
                     Text(
                       "Video Call people with just one click",
-                      style: TextStyle(fontSize: 16),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: "Raleway",
+                      ),
                     ),
                   ],
                   mainAxisAlignment: MainAxisAlignment.center,

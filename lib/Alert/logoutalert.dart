@@ -11,35 +11,50 @@ showAlertDialog(BuildContext context) {
   Widget cancelButton = FlatButton(
     child: Text(
       "Cancel",
-      style: TextStyle(color: Colors.black),
+      style: TextStyle(
+        color: Colors.black,
+        fontFamily: "Raleway",
+      ),
     ),
     onPressed: () {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => Dashboard(auth.getUser)));
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => Dashboard(auth.getUser)));
     },
   );
   Widget continueButton = FlatButton(
     child: Text(
       "Logout",
-      style: TextStyle(color: Colors.orange),
+      style: TextStyle(
+        color: Colors.orange,
+        fontFamily: "Raleway",
+      ),
     ),
     onPressed: () async {
       auth.signOut().then(
             (value) => Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (context) => LoginPage(),
-            ),
-                (route) => false
-        ),
-      );
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LoginPage(),
+                ),
+                (route) => false),
+          );
     },
   );
 
   // set up the AlertDialog
   AlertDialog alert = AlertDialog(
-    title: Text("Warning"),
-    content: Text("This will log you out of the app. Are you sure?"),
+    title: Text(
+      "Warning",
+      style: TextStyle(
+        fontFamily: "Raleway",
+      ),
+    ),
+    content: Text(
+      "This will log you out of the app. Are you sure?",
+      style: TextStyle(
+        fontFamily: "Raleway",
+      ),
+    ),
     actions: [
       cancelButton,
       continueButton,

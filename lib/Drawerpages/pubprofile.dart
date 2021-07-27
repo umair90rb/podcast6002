@@ -11,16 +11,31 @@ class Pubprofile extends StatelessWidget {
         home: DefaultTabController(
           length: 2,
           child: Scaffold(
-            appBar: TabBar(
-              labelColor: Colors.orange,
-              labelPadding: EdgeInsets.only(top: 10),
-              tabs: [
-                Tab(
-                  text: "Mentor Profile",
+            appBar: AppBar(
+              leading: IconButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                icon: Icon(
+                  Icons.arrow_back_ios,
+                  color: Colors.white,
                 ),
-                Tab(text: "Reviews")
-              ],
-              indicatorColor: Colors.white,
+              ),
+              bottom: TabBar(
+                unselectedLabelColor: Colors.black,
+                labelColor: Colors.white,
+                labelStyle: TextStyle(fontFamily: "Raleway"),
+                onTap: (index) {},
+                tabs: [
+                  Tab(
+                    text: "Mentor Profile",
+                  ),
+                  Tab(text: "Reviews")
+                ],
+                indicatorColor: Colors.white,
+              ),
+              title: Text('Review Profile'),
+              backgroundColor: Colors.orange,
             ),
             body: TabBarView(
               children: [

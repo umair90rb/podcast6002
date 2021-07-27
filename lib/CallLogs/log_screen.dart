@@ -33,7 +33,7 @@ class _LogScreenState extends State<LogScreen> {
         title: const Text(
           'Call Logs',
           style: TextStyle(
-              fontFamily: 'Courgette', letterSpacing: 1.25, fontSize: 24),
+              fontFamily: "Raleway", letterSpacing: 1.25, fontSize: 24),
         ),
         backgroundColor: kPrimaryColor,
         centerTitle: true,

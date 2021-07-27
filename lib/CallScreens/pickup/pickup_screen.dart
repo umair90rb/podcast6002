@@ -1,8 +1,8 @@
-import '../../models/call.dart';
-import '../../models/log.dart';
+import 'package:comrade/services/db_services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
+import '../../callscreen.dart';
 import '../../constants.dart';
-import '../../resources/call_methods.dart';
-import '../../CallScreens/call_screen.dart';
 import '../../CallScreens/pickup/circle_painter.dart';
 import '../../CallScreens/pickup/curve_wave.dart';
 import '../../utils/permissions.dart';
@@ -12,11 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 
 class PickupScreen extends StatefulWidget {
-  final Call call;
-
-  PickupScreen({
-    @required this.call,
-  });
+  QuerySnapshot query;
+  PickupScreen(this.query);
 
   @override
   _PickupScreenState createState() => _PickupScreenState();
@@ -24,56 +21,34 @@ class PickupScreen extends StatefulWidget {
 
 class _PickupScreenState extends State<PickupScreen>
     with TickerProviderStateMixin {
-  final CallMethods callMethods = CallMethods();
   AnimationController _controller;
   Color rippleColor = Colors.red;
-  bool isCallMissed = true;
+  DbServices db = DbServices();
 
   @override
   void initState() {
-    print("============INIT==================");
     super.initState();
+    playRingtone();
     _controller = AnimationController(
       duration: const Duration(milliseconds: 2000),
       vsync: this,
     )..repeat();
   }
+  playRingtone() async {
+    await FlutterRingtonePlayer.playRingtone();
+  }
+  stopRingtone() async {
+    await FlutterRingtonePlayer.stop();
+  }
 
   @override
   void dispose() {
     _controller.dispose();
+    stopRingtone();
     print("=======DISPOSE=========");
-    // print(isCallMissed);
-    // if (isCallMissed) {
-    //   addCallLogsToDb(callStatus: CALL_STATUS_MISSED);
-    // }
     super.dispose();
   }
 
-  // add call logs to db
-  addCallLogsToDb({@required String callStatus}) {
-    Log log = Log(
-        callerName: widget.call.callerName,
-        callerPic: widget.call.callerPic,
-        receiverName: widget.call.receiverName,
-        receiverPic: widget.call.receiverPic,
-        timestamp: DateTime.now().toString(),
-        callStatus: callStatus);
-
-    FirebaseFirestore.instance
-        .collection("Users")
-        .doc(widget.call.receiverId)
-        .collection("callLogs")
-        .doc(log.timestamp)
-        .set({
-      "callerName": log.callerName,
-      "callerPic": log.callerPic,
-      "receiverName": log.receiverName,
-      "receiverPic": log.receiverPic,
-      "timestamp": log.timestamp,
-      "callStatus": log.callStatus
-    });
-  }
 
   Widget _button() {
     return Center(
@@ -98,6 +73,7 @@ class _PickupScreenState extends State<PickupScreen>
             child: ClipRRect(
               borderRadius: BorderRadius.circular(100.0),
               child: CachedNetworkImage(
+                imageUrl: 'https://www.allthetests.com/quiz22/picture/pic_1171831236_1.png',
                 placeholder: (context, url) => Container(
                   child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation(kPrimaryColor),
@@ -119,7 +95,6 @@ class _PickupScreenState extends State<PickupScreen>
                   borderRadius: BorderRadius.circular(8.0),
                   clipBehavior: Clip.hardEdge,
                 ),
-                imageUrl: widget.call.callerPic,
                 width: 180.0,
                 height: 180.0,
                 fit: BoxFit.cover,
@@ -132,15 +107,14 @@ class _PickupScreenState extends State<PickupScreen>
   }
 
   void pickCall(BuildContext context) async {
-    isCallMissed = false;
-    addCallLogsToDb(callStatus: CALL_STATUS_RECEIVED);
-    FlutterRingtonePlayer.stop();
+    await FlutterRingtonePlayer.stop();
+    await db.updateDoc('call', widget.query.docs.first.id, {'status':'attended'});
     await Permissions.cameraAndMicrophonePermissionsGranted()
         ? Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => CallScreen(call: widget.call)))
-        : {};
+                builder: (context) => CallScreen(widget.query.docs.first)))
+        : Fluttertoast.showToast(msg: 'No Permission!');
   }
 
   double shake(double animation) =>
@@ -175,28 +149,11 @@ class _PickupScreenState extends State<PickupScreen>
               style: TextStyle(
                   fontSize: 30.0,
                   color: Colors.white,
-                  fontStyle: FontStyle.italic,
+                  fontFamily: "Raleway",
                   fontWeight: FontWeight.w300),
             ),
-            // SizedBox(
-            //   height: 50,
-            // ),
-
-            // Image.network(
-            //   call.callerPic,
-            //   height: 150,
-            //   width: 150,
-            // ),
             SizedBox(
               height: 15,
-            ),
-            Text(
-              widget.call.callerName.toUpperCase(),
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 25,
-                color: Colors.white,
-              ),
             ),
             SizedBox(
               height: 75,
@@ -208,15 +165,15 @@ class _PickupScreenState extends State<PickupScreen>
                   padding: EdgeInsets.all(12.0),
                   decoration: BoxDecoration(
                       shape: BoxShape.circle, color: Colors.redAccent),
-                  // color: Colors.redAccent,
                   child: IconButton(
                     iconSize: 30.0,
                     icon: Icon(Icons.call_end),
                     color: Colors.white,
                     onPressed: () async {
-                      isCallMissed = false;
-                      addCallLogsToDb(callStatus: CALL_STATUS_RECEIVED);
-                      await callMethods.endCall(call: widget.call);
+                      await db.updateDoc('call', widget.query.docs.first.id, {
+                        'status':'declined'
+                      });
+                      await FlutterRingtonePlayer.stop();
                     },
                   ),
                 ),

@@ -7,11 +7,9 @@ import 'package:comrade/Dashboard.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
-
-  User user = Provider.of<User>(context);
+    User user = Provider.of<User>(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
@@ -19,8 +17,8 @@ class ProfilePage extends StatelessWidget {
         centerTitle: true,
         leading: IconButton(
           onPressed: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => Dashboard(user)));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => Dashboard(user)));
           },
           icon: Icon(
             Icons.arrow_back_ios,
@@ -29,7 +27,10 @@ class ProfilePage extends StatelessWidget {
         ),
         title: Text(
           "Profile",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: "Raleway",
+          ),
         ),
       ),
       body: Container(
@@ -54,6 +55,7 @@ class ProfilePage extends StatelessWidget {
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.black54,
+                            fontFamily: "Raleway",
                           ),
                           // textScaleFactor: 1.5,
                         ),
@@ -82,6 +84,7 @@ class ProfilePage extends StatelessWidget {
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.black54,
+                            fontFamily: "Raleway",
                           ),
                           // textScaleFactor: 1.5,
                         ),

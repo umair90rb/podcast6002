@@ -69,6 +69,26 @@ class DbServices{
     return querySnapshot.docs;
   }
 
+  Future getSnapshotWithDualQuery(String collection, String field, List<dynamic> value, String field1, List<dynamic> value1 ) async {
+    CollectionReference colRef = firestore.collection(collection);
+    QuerySnapshot querySnapshot = await colRef
+        .where(field, isEqualTo: value)
+        .where(field1, whereIn: value1)
+        .get();
+    return querySnapshot.docs;
+  }
+
+  Future getSnapshotWithTripleQuery(String collection, String field, List<dynamic> value,
+      String field1, List<dynamic> value1, String field2, List<dynamic> value2 ) async {
+    CollectionReference colRef = firestore.collection(collection);
+    QuerySnapshot querySnapshot = await colRef
+        .where(field, whereIn: value)
+        .where(field1, isEqualTo: value1)
+        .where(field2, isEqualTo: value2)
+        .get();
+    return querySnapshot.docs;
+  }
+
   Future deleteDoc(String collection, String docId) async {
     DocumentReference docRef = firestore.collection(collection).doc(docId);
     try {

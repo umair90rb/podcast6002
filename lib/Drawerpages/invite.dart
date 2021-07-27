@@ -20,8 +20,8 @@ class Invitefriends extends StatelessWidget {
         backgroundColor: Colors.orange,
         leading: IconButton(
           onPressed: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => Dashboard(user)));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => Dashboard(user)));
           },
           icon: Icon(
             Icons.arrow_back_ios,
@@ -31,7 +31,10 @@ class Invitefriends extends StatelessWidget {
         centerTitle: true,
         title: Text(
           "Invite",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: "Raleway",
+          ),
         ),
       ),
       body: Container(
@@ -49,6 +52,7 @@ class Invitefriends extends StatelessWidget {
                       "Increase your earnings",
                       style: TextStyle(
                           fontSize: 30,
+                          fontFamily: "Raleway",
                           fontWeight: FontWeight.bold,
                           color: Colors.black),
                     ),
@@ -66,6 +70,7 @@ class Invitefriends extends StatelessWidget {
                       "Invite your friends and family members to Comrade and increase your earnings",
                       style: TextStyle(
                           fontSize: 18,
+                          fontFamily: "Raleway",
                           // fontWeight: FontWeight.bold,
                           color: Colors.black),
                     ),
@@ -79,7 +84,7 @@ class Invitefriends extends StatelessWidget {
                 height: 300,
                 child: Center(
                   child: Image.asset(
-                    "assets/mentors.jpg",
+                    "assets/logocomrade.png",
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -92,8 +97,12 @@ class Invitefriends extends StatelessWidget {
                 child: Center(
                   child: Container(
                     child: Text(
-                      "Sent Invite",
-                      style: TextStyle(fontSize: 20, color: Colors.black),
+                      "Send Invite",
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.black,
+                        fontFamily: "Raleway",
+                      ),
                     ),
                   ),
                 ),
@@ -127,7 +136,12 @@ class Invitefriends extends StatelessWidget {
                                   color: Colors.black,
                                   size: 30.0,
                                 ),
-                                Text("TEXT")
+                                Text(
+                                  "TEXT",
+                                  style: TextStyle(
+                                    fontFamily: "Raleway",
+                                  ),
+                                )
                               ],
                             ),
                           ),
@@ -151,7 +165,12 @@ class Invitefriends extends StatelessWidget {
                                   color: Colors.black,
                                   size: 30.0,
                                 ),
-                                Text("SHARE")
+                                Text(
+                                  "SHARE",
+                                  style: TextStyle(
+                                    fontFamily: "Raleway",
+                                  ),
+                                )
                               ],
                             ),
                           ),
@@ -176,7 +195,11 @@ class Invitefriends extends StatelessWidget {
                 child: Center(
                   child: Text(
                     "OR COPY YOUR LINK",
-                    style: TextStyle(color: Colors.black, fontSize: 17),
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 17,
+                      fontFamily: "Raleway",
+                    ),
                   ),
                 ),
               ),
@@ -207,8 +230,13 @@ class Invitefriends extends StatelessWidget {
                     ),
                     onTap: () {
                       Clipboard.setData(new ClipboardData(text: text));
-                      _scaffoldKey.currentState.showSnackBar(
-                          SnackBar(content: Text("Link Copied to Clipboard")));
+                      _scaffoldKey.currentState.showSnackBar(SnackBar(
+                          content: Text(
+                        "Link Copied to Clipboard",
+                        style: TextStyle(
+                          fontFamily: "Raleway",
+                        ),
+                      )));
                     },
                   ),
                 ),
